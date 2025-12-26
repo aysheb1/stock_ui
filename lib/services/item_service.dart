@@ -73,4 +73,13 @@ class ItemService {
       return 'mock-added';
     }
   }
+
+  Future<void> deleteItem(String code) async {
+    try {
+      await DioService.dio.delete("api/item/$code");
+    } catch (e) {
+      print('Silme hatası: $e');
+      throw Exception('Ürün silinirken hata oluştu');
+    }
+  }
 }

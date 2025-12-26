@@ -401,11 +401,55 @@ class _ProductCategoryDetailScreenState extends State<ProductCategoryDetailScree
                               _adjust(item, 1, 'IN');
                             },
                           ),
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () {
+                              _showDeleteConfirmation(item);
+                            },
+                          ),
                         ],
                       ),
                     );
                   },
                 ),
+    );
+  }
+
+  void _showDeleteConfirmation(ItemModel item) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Ürünü Sil'),
+        content: Text('${item.name} ürünü silmek istediğinize emin misiniz?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('İptal'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              try {
+                await _itemService.deleteItem(item.code);
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('${item.name} silindi')),
+                  );
+                  await _loadItems();
+                }
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Silme işlemi başarısız oldu')),
+                  );
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Sil', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
     );
   }
 }
